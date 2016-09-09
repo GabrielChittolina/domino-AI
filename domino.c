@@ -7,7 +7,7 @@
 //deck_table
 //deck_back
 
-TppecaDomino * nova_jogada(){
+TppecaDomino * next_move(){
 /*
  * Função em que a IA decide a próxima
  * jogada a ser realizada com base nas
