@@ -1,6 +1,6 @@
 #include "lista.c"
 
-#define INFINITY 11234
+#define INFINITO 11234
 
 //deck_player
 //deck_pc
