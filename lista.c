@@ -12,6 +12,10 @@ TppecaDomino * new_list(){
 	return NULL;
 }
 
+TppecaDomino * initialize(){
+	return NULL;
+}
+
 TppecaDomino * add_left(TppecaDomino * list_a, 
 		int numberRight, int numberLeft){
 	TppecaDomino * new_piece = (TppecaDomino*)malloc(sizeof(TppecaDomino));
@@ -29,4 +33,17 @@ TppecaDomino * add_left(TppecaDomino * list_a,
 	new_piece->left = NULL;
 
 	return new_piece;
+}
+
+TppecaDomino * new_deck(){ //retorna uma lista com todas as peças do jogo
+	int i, j;
+	TppecaDomino * deck = initialize();
+
+	for(i = 0; i <= 6; i++){
+		for(j = 0; j <= i; j++){
+			deck = add_left(deck, i, j);
+		}
+	}
+
+	return deck;
 }
