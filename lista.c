@@ -152,3 +152,64 @@ int * frequency_rank(TppecaDomino * list_a){
 
 	return freq_rank;
 }
+
+TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino *deck_back){
+	TppecaDomino *back = deck_back;
+	int size = deck_size(deck_back);
+	int position;
+
+	srand( (unsigned)time(NULL));
+	position = rand() % (size +1);
+
+	if(deck_back == NULL){
+		return list_a;
+	}
+
+	if(deck_back->left == NULL && deck_back->right == NULL){
+		add_left(list_a, deck_back->numberRight, deck_back->numberLeft);
+		delete(deck_back, deck_back->numberRight, deck_back->numberLeft);
+		return list_a;
+	}
+
+
+	for(i=0; i < position; i++){
+		back = back->right;
+	}
+
+	add_left(list_a, back->numberRight, back->numberLeft);
+	delete(deck_back, back->numberRight, back->numberLeft);
+	return list_a;
+}
+
+TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
+	TppecaDomino * piece = list_a;
+	
+	while(piece != NULL && piece->numberRight != numberRight && piece->numberLeft != numberLeft){
+		piece = piece->right;
+	}
+
+	if(piece == NULL) return list_a;
+
+	if(piece->right == NULL && piece->left == NULL){
+		free(piece);
+		return NULL;
+	}
+
+	if(piece->left == NULL){
+		list_a = list_a->right;
+		list_a->left = NULL;
+		free(piece);
+		return list_a;
+	}
+
+	if(piece->right == NULL){
+		list_a->left->right = NULL;
+		free(piece);
+		return list_a;
+	}
+
+	piece->left->right = piece->right;
+	piece->right->left = piece->left;
+	free(piece);
+	return list_a;
+}
