@@ -95,6 +95,22 @@ int deck_size(TppecaDomino * list_a){
 	return i;
 }
 
+int left_table_number(TppecaDomino * deck_table){
+	//retorna o numberLeft do primeiro elemento
+	if(deck_table == NULL) return -1;
+	return deck_table->numberLeft;
+}
+
+int right_table_number(TppecaDomino * deck_table){
+	//retorna o numberRight do último elemento
+	TppecaDomino * p;
+	if(deck_table == NULL) return -1;
+	
+	for(p = deck_table; p->right != NULL; p = p->right);
+
+	return p->numberRight;
+}
+
 int number_is_in(int * freq_rank, int number){//função utilizada na função frequency_rank
 	//verifica se um determinado número está contido em um vetor
 	int i;
@@ -153,34 +169,6 @@ int * frequency_rank(TppecaDomino * list_a){
 	return freq_rank;
 }
 
-TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino *deck_back){
-	TppecaDomino *back = deck_back;
-	int size = deck_size(deck_back);
-	int position;
-
-	srand( (unsigned)time(NULL));
-	position = rand() % (size +1);
-
-	if(deck_back == NULL){
-		return list_a;
-	}
-
-	if(deck_back->left == NULL && deck_back->right == NULL){
-		add_left(list_a, deck_back->numberRight, deck_back->numberLeft);
-		delete(deck_back, deck_back->numberRight, deck_back->numberLeft);
-		return list_a;
-	}
-
-
-	for(i=0; i < position; i++){
-		back = back->right;
-	}
-
-	add_left(list_a, back->numberRight, back->numberLeft);
-	delete(deck_back, back->numberRight, back->numberLeft);
-	return list_a;
-}
-
 TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	TppecaDomino * piece = list_a;
 	
@@ -212,4 +200,55 @@ TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	piece->right->left = piece->left;
 	free(piece);
 	return list_a;
+}
+
+TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino *deck_back){
+	int i;
+	TppecaDomino *back = deck_back;
+	int size = deck_size(deck_back);
+	int position;
+
+	srand( (unsigned)time(NULL));
+	position = rand() % (size +1);
+
+	if(deck_back == NULL){
+		return list_a;
+	}
+
+	if(deck_back->left == NULL && deck_back->right == NULL){
+		add_left(list_a, deck_back->numberRight, deck_back->numberLeft);
+		delete(deck_back, deck_back->numberRight, deck_back->numberLeft);
+		return list_a;
+	}
+
+
+	for(i=0; i < position; i++){
+		back = back->right;
+	}
+
+	add_left(list_a, back->numberRight, back->numberLeft);
+	delete(deck_back, back->numberRight, back->numberLeft);
+	return list_a;
+}
+
+
+int main(void){
+	TppecaDomino * d = new_deck();
+	print_deck(d);
+	printf("%d -- %d\n", left_table_number(d), right_table_number(d));
+
+
+	d = new_list();
+
+	printf("\n\n");
+
+	d = add_left(d, 1, 2);
+	d = add_left(d, 3, 2);
+	d = add_left(d, 3, 3);
+	d = add_left(d, 10, 10);
+
+	print_deck(d);
+	printf("%d -- %d\n", left_table_number(d), right_table_number(d));
+
+	return 0;
 }
