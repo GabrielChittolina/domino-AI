@@ -189,7 +189,7 @@ TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino *deck_back){
 	TppecaDomino *back = deck_back;
 	int size = deck_size(deck_back);
 	int position, i;
-	printf("trolei");
+	printf("trolei2");
 	srand( (unsigned)time(NULL));
 	position = rand() % (size);
 
