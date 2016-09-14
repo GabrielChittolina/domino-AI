@@ -139,46 +139,16 @@ int * frequency_rank(TppecaDomino * list_a){
 		}
 	}
 
-	for(i = 0; i < PIECE_MAX; i++){
-		for(j = 0; j < PIECE_MAX; j++){
-			minval = INF;
+	for(i = 0; i <= 6; i++){
+		minval = INF;
+		for(j = 0; j <= 6; j++){
 			if(!number_is_in(freq_rank, j) && freq[j] < minval){
 				minval = freq[j];
 				minind = j;
 			}
-			freq_rank[i] = minind;
 		}
+		freq_rank[i] = minind;
 	}
 
 	return freq_rank;
-}
-
-int main(void){
-	TppecaDomino * a = new_deck();
-	int * freq_rank = (int*)malloc(PIECE_MAX * sizeof(int));
-	int i;
-
-	print_deck(a);
-
-	freq_rank = frequency_rank(a);
-
-	for(i = 0; i < PIECE_MAX; i++){
-		printf("%d ", freq_rank[i]);
-	}
-	printf("\n");
-
-
-	for(i = 0; i < 123; i++){
-		a = add_left(a, 3, 3);
-	}
-	print_deck(a);
-
-	freq_rank = frequency_rank(a);
-
-	for(i = 0; i < PIECE_MAX; i++){
-		printf("%d ", freq_rank[i]);
-	}
-	printf("\n");
-
-	return 0;
 }
