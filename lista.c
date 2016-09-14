@@ -1,5 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define PIECE_MAX 7
+#define INF 1123
 
 typedef struct _pecaDomino{
 	int numberRight;
@@ -62,4 +67,118 @@ TppecaDomino * new_deck(){ //retorna uma lista com todas as peças do jogo
 	}
 
 	return deck;
+}
+
+void print_deck(TppecaDomino * deck){
+	TppecaDomino * p;
+
+	if(deck == NULL){
+		printf("\n");
+		return;
+	}
+
+	for(p = deck; p != NULL; p = p->right){
+		printf(" [%d|%d] ", p->numberLeft, p->numberRight);
+	}
+	printf("\n");
+}
+
+int deck_size(TppecaDomino * list_a){
+	int i;
+	TppecaDomino * q;
+	if(list_a == NULL) return 0;
+
+	for(i = 0, q = list_a; q != NULL; q = q->right){
+		i++;
+	}
+
+	return i;
+}
+
+int number_is_in(int * freq_rank, int number){//função utilizada na função frequency_rank
+	//verifica se um determinado número está contido em um vetor
+	int i;
+
+	for(i = 0; i < PIECE_MAX; i++){
+		if(number == freq_rank[i]) return 1;
+	}
+	return 0;
+}
+
+int * frequency_rank(TppecaDomino * list_a){
+	//retorna um vetor com os números ordenados
+	//em ordem crescente de incidência
+	
+	TppecaDomino * p;
+	int i, j;
+	int minval, minind;
+
+	int * freq = (int*)malloc(PIECE_MAX * sizeof(int));
+	//vetor com a frequência de cada número
+	
+	int * freq_rank = (int*)malloc(PIECE_MAX * sizeof(int));
+	//vetor com a ordem decrescente de inciência
+	
+	memset(freq, 0, PIECE_MAX * sizeof(int));
+	memset(freq_rank, -1, PIECE_MAX * sizeof(int));
+
+	if(list_a == NULL){
+		for(i = 0; i < PIECE_MAX; i++){
+			freq[i] = i;
+		}
+		return freq;
+	}
+
+	for(p = list_a; p != NULL; p = p->right){
+		if(p->numberLeft == p->numberRight){
+			freq[p->numberLeft]++;
+		}
+		else{
+			freq[p->numberLeft]++;
+			freq[p->numberRight]++;
+		}
+	}
+
+	for(i = 0; i < PIECE_MAX; i++){
+		for(j = 0; j < PIECE_MAX; j++){
+			minval = INF;
+			if(!number_is_in(freq_rank, j) && freq[j] < minval){
+				minval = freq[j];
+				minind = j;
+			}
+			freq_rank[i] = minind;
+		}
+	}
+
+	return freq_rank;
+}
+
+int main(void){
+	TppecaDomino * a = new_deck();
+	int * freq_rank = (int*)malloc(PIECE_MAX * sizeof(int));
+	int i;
+
+	print_deck(a);
+
+	freq_rank = frequency_rank(a);
+
+	for(i = 0; i < PIECE_MAX; i++){
+		printf("%d ", freq_rank[i]);
+	}
+	printf("\n");
+
+
+	for(i = 0; i < 123; i++){
+		a = add_left(a, 3, 3);
+	}
+	print_deck(a);
+
+	freq_rank = frequency_rank(a);
+
+	for(i = 0; i < PIECE_MAX; i++){
+		printf("%d ", freq_rank[i]);
+	}
+	printf("\n");
+
+	return 0;
 }
