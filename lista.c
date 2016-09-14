@@ -172,7 +172,7 @@ int * frequency_rank(TppecaDomino * list_a){
 TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	TppecaDomino * piece = list_a;
 	
-	while(piece != NULL && piece->numberRight != numberRight && piece->numberLeft != numberLeft){
+	while(piece->right != NULL && piece->numberRight != numberRight && piece->numberLeft != numberLeft){
 		piece = piece->right;
 	}
 
@@ -203,52 +203,27 @@ TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 }
 
 TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino *deck_back){
-	int i;
 	TppecaDomino *back = deck_back;
 	int size = deck_size(deck_back);
-	int position;
-
+	int position, i;
+	printf("zueira reborn");
 	srand( (unsigned)time(NULL));
-	position = rand() % (size +1);
+	position = rand() % (size);
 
 	if(deck_back == NULL){
 		return list_a;
 	}
 
 	if(deck_back->left == NULL && deck_back->right == NULL){
-		add_left(list_a, deck_back->numberRight, deck_back->numberLeft);
+		add_right(list_a, deck_back->numberRight, deck_back->numberLeft);
 		delete(deck_back, deck_back->numberRight, deck_back->numberLeft);
 		return list_a;
 	}
 
-
 	for(i=0; i < position; i++){
 		back = back->right;
 	}
-
-	add_left(list_a, back->numberRight, back->numberLeft);
+	add_right(list_a, back->numberRight, back->numberLeft);
 	delete(deck_back, back->numberRight, back->numberLeft);
 	return list_a;
-}
-
-
-int main(void){
-	TppecaDomino * d = new_deck();
-	print_deck(d);
-	printf("%d -- %d\n", left_table_number(d), right_table_number(d));
-
-
-	d = new_list();
-
-	printf("\n\n");
-
-	d = add_left(d, 1, 2);
-	d = add_left(d, 3, 2);
-	d = add_left(d, 3, 3);
-	d = add_left(d, 10, 10);
-
-	print_deck(d);
-	printf("%d -- %d\n", left_table_number(d), right_table_number(d));
-
-	return 0;
 }
