@@ -98,6 +98,22 @@ TppecaDomino * new_deck(){ //retorna uma lista com todas as peças do jogo
 	return deck;
 }
 
+int left_table_number(TppecaDomino * deck_table){
+	//retorna o numberLeft do primeiro elemento
+	if(deck_table == NULL) return -1;
+	return deck_table->numberLeft;
+}
+
+int right_table_number(TppecaDomino * deck_table){
+	//retorna o numberRight do último elemento
+	TppecaDomino * p;
+	if(deck_table == NULL) return -1;
+	
+	for(p = deck_table; p->right != NULL; p = p->right);
+
+	return p->numberRight;
+}
+
 int number_is_in(int * freq_rank, int number){//função utilizada na função frequency_rank
 	//verifica se um determinado número está contido em um vetor
 	int i;
@@ -164,13 +180,13 @@ TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 
 	while(piece->right != NULL && piece->numberRight != numberRight && piece->numberLeft != numberLeft){
 		piece = piece->right;
-	}	
-
+	}
+	
 	if(piece->right == NULL && piece->left == NULL){
 		free(piece);
 		return NULL;
 	}
-
+	
 	if(piece->left == NULL){
 		list_a = list_a->right;
 		print_deck(list_a);
