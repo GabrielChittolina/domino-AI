@@ -178,7 +178,7 @@ TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	
 	if(piece == NULL) return list_a;
 
-	while(piece->right != NULL && piece->numberRight != numberRight && piece->numberLeft != numberLeft){
+	while(piece->right != NULL && (piece->numberRight != numberRight || piece->numberLeft != numberLeft)){
 		piece = piece->right;
 	}
 	
