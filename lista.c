@@ -34,6 +34,13 @@ void print_deck(TppecaDomino * deck){
 	printf("\n");
 }
 
+TppecaDomino * turn_piece(TppecaDomino * peca){
+	int aux = peca->numberRight;
+	peca->numberRight = peca->numberLeft;
+	peca->numberLeft = aux;
+	return peca;
+}
+
 int deck_size(TppecaDomino * list_a){
 	int i;
 	TppecaDomino * q;
@@ -174,7 +181,6 @@ int * frequency_rank(TppecaDomino * list_a){
 
 TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	TppecaDomino * piece = list_a;
-	int i;
 	
 	if(piece == NULL) return list_a;
 
@@ -234,4 +240,16 @@ TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino ** deck_back){
 	*deck_back = delete((*deck_back), back->numberRight, back->numberLeft);
 	print_deck((*deck_back));
 	return list_a;
+}
+
+int main(void){
+	TppecaDomino * nova = new_list();
+	nova = (TppecaDomino*)malloc(sizeof(TppecaDomino));
+	nova->numberLeft = 0;
+	nova->numberRight = 6;
+	nova->right = nova->left = NULL;
+	print_deck(nova);
+	nova = turn_piece(nova);
+	print_deck(nova);
+	return 0;
 }
