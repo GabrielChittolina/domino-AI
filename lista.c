@@ -115,10 +115,31 @@ int right_table_number(TppecaDomino * deck_table){
 	//retorna o numberRight do último elemento
 	TppecaDomino * p;
 	if(deck_table == NULL) return -1;
-	
+
 	for(p = deck_table; p->right != NULL; p = p->right);
 
 	return p->numberRight;
+}
+
+int where_play(TppecaDomino * piece, TppecaDomino * table){
+	// Verifica se é possível jogar: Retorna 0 se não for possível,
+	// -1 para esquerda ou 1 para direita
+	if(table == NULL) return 1;
+
+	if(piece->numberLeft == right_table_number(table)) return 1;
+
+	if(piece->numberRight == right_table_number(table)){
+		turn_piece(piece);
+		return 1;
+	}
+
+	if(piece->numberRight == left_table_number(table)) return -1;
+	if(piece->numberLeft == left_table_number(table)){
+		turn_piece(piece);
+		return -1;
+	}
+
+	return 0;
 }
 
 int number_is_in(int * freq_rank, int number){//função utilizada na função frequency_rank
@@ -134,17 +155,17 @@ int number_is_in(int * freq_rank, int number){//função utilizada na função f
 int * frequency_rank(TppecaDomino * list_a){
 	//retorna um vetor com os números ordenados
 	//em ordem crescente de incidência
-	
+
 	TppecaDomino * p;
 	int i, j;
 	int minval, minind;
 
 	int * freq = (int*)malloc(PIECE_MAX * sizeof(int));
 	//vetor com a frequência de cada número
-	
+
 	int * freq_rank = (int*)malloc(PIECE_MAX * sizeof(int));
 	//vetor com a ordem decrescente de inciência
-	
+
 	memset(freq, 0, PIECE_MAX * sizeof(int));
 	memset(freq_rank, -1, PIECE_MAX * sizeof(int));
 
@@ -181,23 +202,21 @@ int * frequency_rank(TppecaDomino * list_a){
 
 TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	TppecaDomino * piece = list_a;
-	
+
 	if(piece == NULL) return list_a;
 
 	while(piece->right != NULL && (piece->numberRight != numberRight || piece->numberLeft != numberLeft)){
 		piece = piece->right;
 	}
-	
+
 	if(piece->right == NULL && piece->left == NULL){
 		free(piece);
 		return NULL;
 	}
-	
+
 	if(piece->left == NULL){
 		list_a = list_a->right;
-		print_deck(list_a);
 		list_a->left = NULL;
-		print_deck(list_a);
 		free(piece);
 		return list_a;
 	}
@@ -213,11 +232,10 @@ TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 	return list_a;
 }
 
-TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino ** deck_back){
+TppecaDomino * catch_piece(TppecaDomino * list_a, TppecaDomino ** deck_back){
 	TppecaDomino * back = *deck_back;
 	int size = deck_size(*deck_back);
 	int position, i;
-	print_deck(*deck_back);
 	srand( (unsigned)time(NULL));
 	position = rand() % (size);
 
@@ -236,20 +254,78 @@ TppecaDomino * catch(TppecaDomino * list_a, TppecaDomino ** deck_back){
 	}
 
 	list_a = add_left(list_a, back->numberRight, back->numberLeft);
-	print_deck((*deck_back));
 	*deck_back = delete((*deck_back), back->numberRight, back->numberLeft);
-	print_deck((*deck_back));
 	return list_a;
 }
 
-int main(void){
-	TppecaDomino * nova = new_list();
-	nova = (TppecaDomino*)malloc(sizeof(TppecaDomino));
-	nova->numberLeft = 0;
-	nova->numberRight = 6;
-	nova->right = nova->left = NULL;
-	print_deck(nova);
-	nova = turn_piece(nova);
-	print_deck(nova);
+TppecaDomino * push_table(TppecaDomino * list_a, TppecaDomino ** table, int right_value, int left_value){
+	TppecaDomino * piece = list_a;
+
+	if(list_a == NULL) return NULL;
+
+	while(piece->right != NULL && (piece->numberRight != right_value || piece->numberLeft != left_value)){
+		piece = piece->right;
+	}
+
+	if(piece->numberRight != right_value || piece->numberLeft != left_value){
+		piece = list_a;
+		while(piece->right != NULL && (piece->numberRight != left_value || piece->numberLeft != right_value)){
+			piece = piece->right;
+		}
+	}
+
+	if(where_play(piece, (*table)) == 1){
+		(*table) = add_right((*table), piece->numberRight, piece->numberLeft);
+		list_a = delete(list_a, piece->numberRight, piece->numberLeft);
+		return list_a;
+	}
+
+	if(where_play(piece, (*table)) == -1){
+		(*table) = add_left((*table), piece->numberRight, piece->numberLeft);
+		list_a = delete(list_a, piece->numberRight, piece->numberLeft);
+		return list_a;
+	}
+
+	printf("\n\nIMPOSSÍVEL!\n\n"); // Teoricamente nunca entrará;
+	return list_a;
+}
+
+int main(){
+	TppecaDomino * deck_back;
+	TppecaDomino * deck_player;
+	TppecaDomino * deck_table;
+
+	deck_back = new_deck();
+	deck_player = new_list();
+	deck_table = new_list();
+	//printf("DECK_BACK");
+	//print_deck(deck_back);
+	//printf("DECK_PLAYER");
+	//print_deck(deck_player);
+	for(int aux = 0; aux < 28; deck_player = catch_piece(deck_player, &deck_back), aux++);
+
+	printf("DECK_BACK: ");
+	print_deck(deck_back);
+	printf("DECK_PLAYER: ");
+	print_deck(deck_player);
+	printf("DECK_TABLE: ");
+	print_deck(deck_table);
+
+	deck_player = push_table(deck_player, &deck_table, 5, 2);
+	deck_player = push_table(deck_player, &deck_table, 2, 6);
+	deck_player = push_table(deck_player, &deck_table, 1, 5);
+	deck_player = push_table(deck_player, &deck_table, 1, 6);
+	deck_player = push_table(deck_player, &deck_table, 3, 6);
+	deck_player = push_table(deck_player, &deck_table, 3, 5);
+	deck_player = push_table(deck_player, &deck_table, 4, 6);
+
+
+	printf("DECK_BACK: ");
+	print_deck(deck_back);
+	printf("DECK_PLAYER: ");
+	print_deck(deck_player);
+	printf("DECK_TABLE: ");
+	print_deck(deck_table);
+
 	return 0;
 }
