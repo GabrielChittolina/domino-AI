@@ -1,5 +1,6 @@
-#include "lista.c"
+#include "lista.h"
 #include <string.h>
+#include <stdio.h>
 
 #define PIECE_MAX 7
 
@@ -8,51 +9,47 @@
 //deck_table
 //deck_back
 
+TppecaDomino * ai_move(TppecaDomino * deck_player, TppecaDomino * deck_pc, TppecaDomino ** _deck_table, TppecaDomino ** _deck_back){
 
+	TppecaDomino * p; 
 
-TppecaDomino * next_move(TppecaDomino * deck_player, TppecaDomino * deck_pc,
-		TppecaDomino * deck_table, TppecaDomino * deck_back){
-	/*
-	 * Função em que a IA decide a próxima
-	 * jogada a ser realizada com base nas
-	 * peças que estão no seu "deck_pc",
-	 * nas peças que estão na mesa, e nas
-	 * peças que ela não tem acesso
-	 * (deck_player e deck_back).
-	 */
+	TppecaDomino * deck_table = *_deck_table;
+	TppecaDomino * deck_back = *_deck_back;
 
-	int * frequency;
-	//vetor em que a posição n representa a
-	//frequência do número n dentre peças que podem
-	//estar no deck_player
-	//(quando um número aparece duas vezes na mesma
-	//peça ele só é contado uma vez)
-	memset(frequência, 0, PIECE_MAX);
+	int i;
 
 	TppecaDomino * unknown = sum(deck_player, deck_back);
-	//conjunto de peças que tem alguma chance de
-	//estar no deck_player
-	
-	frequency = frequency_in(unknown);
+
+
+	int * freq_order = frequency_rank(unknown);
 	free(unknown);
 	unknown = NULL;
 
-	int * order_of_freq = order_freq(frequency);
+	for(i = 0; i < PIECE_MAX; i++){
+
+		for(p = deck_pc; p != NULL; p = p->right){
+			if(  (p->numberRight == freq_order[i] && 
+						(p->numberLeft == left_table_number(deck_table) || p->numberLeft == right_table_number(deck_table))) 
+					|| (p->numberLeft == freq_order[i] && 
+						(p->numberRight == left_table_number(deck_table) || p->numberRight == right_table_number(deck_table)))){
+				deck_pc = push_table(deck_pc, &deck_table, p->numberRight, p->numberLeft);
+				return deck_pc;
+			}
+		}
+
+		if(i == PIECE_MAX - 1 && deck_back != NULL){
+			deck_pc = catch_piece(deck_pc, &deck_back);//pesca uma peça
+
+			unknown = sum(deck_player, deck_back);
+			freq_order = frequency_rank(unknown);
+			free(unknown);
+			unknown = NULL;
+			//atualiza o freq_order
+
+			i = -1;//para reiniciar o loop
+		}
+	}
+
+	return deck_pc;
 }
 
-int * order_freq(int * frequency){
-	int * order_of_freq = (int*)malloc(PIECE_MAX * sizeof(int));
-	memset(order_of_freq, -1, PIECE_MAX * sizeof(int));
-
-}
-
-int is_in(int * vetor, int n){
-	//retorna 1 se um número está no vetor,
-	//do contrário retorna 0
-	int i;
-
-	for(i = 0; i < PIECE_MAX; i++)
-		if(vetor[i] == n) return 0;
-	
-	return 1;
-}

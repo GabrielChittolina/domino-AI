@@ -6,7 +6,6 @@
 #define PIECE_MAX 7
 #define INF 1123
 
-
 typedef struct _pecaDomino{
 	int numberRight;
 	int numberLeft;
@@ -290,42 +289,17 @@ TppecaDomino * push_table(TppecaDomino * list_a, TppecaDomino ** table, int righ
 	return list_a;
 }
 
-int main(){
-	TppecaDomino * deck_back;
-	TppecaDomino * deck_player;
-	TppecaDomino * deck_table;
+TppecaDomino * sum(TppecaDomino * list_a, TppecaDomino * list_b){
+	TppecaDomino * n = new_list();
+	TppecaDomino * p;
 
-	deck_back = new_deck();
-	deck_player = new_list();
-	deck_table = new_list();
-	//printf("DECK_BACK");
-	//print_deck(deck_back);
-	//printf("DECK_PLAYER");
-	//print_deck(deck_player);
-	for(int aux = 0; aux < 28; deck_player = catch_piece(deck_player, &deck_back), aux++);
+	for(p = list_a; p != NULL; p = p->right){
+		n = add_right(n, p->numberRight, p->numberLeft);
+	}
 
-	printf("DECK_BACK: ");
-	print_deck(deck_back);
-	printf("DECK_PLAYER: ");
-	print_deck(deck_player);
-	printf("DECK_TABLE: ");
-	print_deck(deck_table);
+	for(p = list_b; p != NULL; p = p->right){
+		n = add_right(n, p->numberRight, p->numberLeft);
+	}
 
-	deck_player = push_table(deck_player, &deck_table, 5, 2);
-	deck_player = push_table(deck_player, &deck_table, 2, 6);
-	deck_player = push_table(deck_player, &deck_table, 1, 5);
-	deck_player = push_table(deck_player, &deck_table, 1, 6);
-	deck_player = push_table(deck_player, &deck_table, 3, 6);
-	deck_player = push_table(deck_player, &deck_table, 3, 5);
-	deck_player = push_table(deck_player, &deck_table, 4, 6);
-
-
-	printf("DECK_BACK: ");
-	print_deck(deck_back);
-	printf("DECK_PLAYER: ");
-	print_deck(deck_player);
-	printf("DECK_TABLE: ");
-	print_deck(deck_table);
-
-	return 0;
+	return n;
 }
