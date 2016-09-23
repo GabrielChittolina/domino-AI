@@ -25,12 +25,14 @@ int main(void){
 		deck_pc = catch_piece(deck_pc, &deck_back);
 	}
 
-	while(!end_game){ //loop principal do jogo
+	while(1){ //loop principal do jogo
 
 		printf("Table:\n");
 		print_deck(deck_table);
 		printf("Player's deck:\n");
 		print_deck(deck_player);
+		printf("PC deck:\n");
+		print_deck(deck_pc);
 
 		printf("Piece to play is: ");
 
@@ -43,18 +45,36 @@ int main(void){
 				print_deck(deck_table);
 				printf("Player's deck:\n");
 				print_deck(deck_player);
+				printf("PC deck:\n");
+				print_deck(deck_pc);
 
 				continue;
 			}
 
-			printf("IT IS %d\n", _where_play(deck_table, deck_player, numberRight, numberLeft));
 			if(_where_play(deck_table, deck_player, numberRight, numberLeft)){
 				deck_player = push_table(deck_player, &deck_table, numberRight, numberLeft);
 				break;
 			}
+
+			if(deck_player == NULL){
+				end_game = 1;
+				break;
+			}
+
 			printf("Choose another piece! Or fish one.\n");
 		}
+		if(end_game) break;
+
+
+		deck_pc = ai_move(deck_pc, deck_player, &deck_table, &deck_back);
+		if(deck_pc == NULL) break;
 	}
+
+	if(deck_player == NULL) printf("Você ganhou!!!\n");
+	else if(deck_pc == NULL) printf("Você perdeu!!!\n");
+	else if(deck_size(deck_player) == deck_size(deck_pc)) printf("Emapte!\n");
+	else if(deck_size(deck_player) < deck_size(deck_pc)) printf("Você ganhou!\n");
+	else printf("Você perdeu!\n");
 
 	return 0;
 }
