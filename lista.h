@@ -36,6 +36,8 @@ int right_table_number(TppecaDomino * deck_table);
 
 int where_play(TppecaDomino * piece, TppecaDomino * table);
 
+int _where_play(TppecaDomino * table, TppecaDomino * player, int numberRight, int numberLeft);
+
 int number_is_in(int * freq_rank, int number);
 
 int * frequency_rank(TppecaDomino * list_a);

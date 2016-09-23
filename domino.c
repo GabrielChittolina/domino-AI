@@ -1,6 +1,4 @@
 #include "lista.h"
-#include <string.h>
-#include <stdio.h>
 
 #define PIECE_MAX 7
 

@@ -141,6 +141,22 @@ int where_play(TppecaDomino * piece, TppecaDomino * table){
 	return 0;
 }
 
+int _where_play(TppecaDomino * table, TppecaDomino * player, int numberRight, int numberLeft){
+	//uma reutilização de where_play para poder usar a função apenas com
+	//os números da peça
+	
+	TppecaDomino * p;
+
+	for(p = player; p != NULL; p = p->right){
+		if( (p->numberLeft == numberLeft && p->numberRight == numberRight) || 
+				(p->numberLeft == numberRight && p->numberRight == numberLeft) ){
+			return where_play(p, table);
+		}
+	}
+
+	return 0;
+}
+
 int number_is_in(int * freq_rank, int number){//função utilizada na função frequency_rank
 	//verifica se um determinado número está contido em um vetor
 	int i;
@@ -232,11 +248,14 @@ TppecaDomino * delete(TppecaDomino * list_a, int numberRight, int numberLeft){
 }
 
 TppecaDomino * catch_piece(TppecaDomino * list_a, TppecaDomino ** deck_back){
+	//funçao que pesca uma peça do monte
 	TppecaDomino * back = *deck_back;
 	int size = deck_size(*deck_back);
 	int position, i;
 	srand( (unsigned)time(NULL));
-	position = rand() % (size);
+
+	if(size > 0) position = rand() % (size);
+	else position = 0;
 
 	if((*deck_back) == NULL){
 		return list_a;
