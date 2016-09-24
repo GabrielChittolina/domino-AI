@@ -67,7 +67,7 @@ int main(void){
 		while(1){ //loop para a IA jogar
 			deck_pc = ai_move(deck_pc, deck_player, &deck_table, &deck_back);
 
-			if(!can_play(deck_pc, deck_table, deck_back) && !can_play(deck_player, deck_table, deck_back) && deck_back != NULL){
+			if(deck_pc == NULL || (!can_play(deck_pc, deck_table, deck_back) && !can_play(deck_player, deck_table, deck_back) && deck_back != NULL)){
 				//se ninguém mais consegue jogar
 				end_game = 1;
 				break;
@@ -84,7 +84,7 @@ int main(void){
 
 	if(deck_player == NULL) printf("Você ganhou!!!\n");
 	else if(deck_pc == NULL) printf("Você perdeu!!!\n");
-	else if(deck_size(deck_player) == deck_size(deck_pc)) printf("Emapte!\n");
+	else if(deck_size(deck_player) == deck_size(deck_pc)) printf("Empate!\n");
 	else if(deck_size(deck_player) < deck_size(deck_pc)) printf("Você ganhou!\n");
 	else printf("Você perdeu!\n");
 
