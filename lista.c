@@ -5,6 +5,9 @@
 
 #define PIECE_MAX 7
 #define INF 1123
+#define PIECE_LENGTH 11 
+#define PIECE_HEIGHT 4 
+#define PIECES_PER_LINE 4
 
 typedef struct _pecaDomino{
 	int numberRight;
@@ -18,19 +21,62 @@ TppecaDomino * new_list(){
 }
 
 void print_deck(TppecaDomino * deck){
+	int i, piece_ind;
+	int head_x, head_y;
 	TppecaDomino * p;
 
-	printf("\n");
+	if(deck == NULL) return;
 
-	if(deck == NULL){
-		printf("\n");
-		return;
+	char ** matrix = (char**)malloc(PIECE_HEIGHT * 10 * sizeof(char*));
+
+	int number_order[6][2] = {
+		{1, 1},
+		{2, 3},
+		{2, 1},
+		{1, 3},
+		{1, 2},
+		{2, 2}
+	};
+
+	for(i = 0; i < PIECE_HEIGHT * 10; i++){
+		matrix[i] = (char*)malloc(PIECE_LENGTH * PIECES_PER_LINE * sizeof(char) + sizeof(char));
+		memset(matrix[i], ' ', PIECE_LENGTH * 4 * sizeof(char));
+		matrix[i][PIECE_LENGTH * PIECES_PER_LINE] = '\0';
 	}
 
-	for(p = deck; p != NULL; p = p->right){
-		printf("[%d|%d] ", p->numberLeft, p->numberRight);
+	for(p = deck, piece_ind = 0; p != NULL; p = p->right, piece_ind++){
+		head_x = piece_ind % PIECES_PER_LINE * PIECE_LENGTH;
+		head_y = piece_ind / PIECES_PER_LINE * PIECE_HEIGHT;
+
+		for(i = 0; i < PIECE_LENGTH; i++){
+			matrix[head_y][head_x + i] = '-';
+			matrix[head_y + PIECE_HEIGHT - 1][head_x + i] = '-';
+		}
+
+		for(i = 0; i < PIECE_HEIGHT; i++){
+			matrix[head_y + i][head_x] = '|';
+			matrix[head_y + i][head_x + PIECE_LENGTH -1] = '|';
+		}
+
+		for(i = 1; i < PIECE_HEIGHT - 1; i++){
+			matrix[head_y + i][head_x + 5] = '|';
+		}
+
+		for(i = 0; i < p->numberLeft; i++){
+			matrix[head_y + number_order[i][0]][head_x + number_order[i][1]] = 'o';
+		}
+
+		for(i = 0; i < p->numberRight; i++){
+			matrix[head_y + number_order[i][0]][head_x + number_order[i][1] + 5] = 'o';
+		}
 	}
-	printf("\n");
+
+	for(i = 0; i < piece_ind / PIECES_PER_LINE * PIECE_HEIGHT + PIECE_HEIGHT; i++){
+		printf("%s\n", matrix[i]);
+	}
+
+
+	free(matrix);
 }
 
 TppecaDomino * turn_piece(TppecaDomino * peca){
