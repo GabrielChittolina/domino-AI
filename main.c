@@ -3,8 +3,6 @@
 #include "lista.h"
 #include "domino.h"
 
-//这很好！！！
-
 int main(void){
 	int i;
 	int numberLeft, numberRight;
@@ -36,10 +34,14 @@ int main(void){
 
 		printf("Piece to play is: ");
 
-		while(1){
+		while(1){ //loop para o player jogar
 			scanf("%d %d", &numberLeft, &numberRight);
 
-			if(numberLeft < 0 || numberRight < 0){
+			if( (numberLeft < 0 || numberRight < 0) && deck_back == NULL){
+				break;
+			}
+
+			if(numberLeft < 0 || numberRight < 0){ //para pescar
 				deck_player = catch_piece(deck_player, &deck_back);
 				printf("Table:\n");
 				print_deck(deck_table);
@@ -51,23 +53,33 @@ int main(void){
 				continue;
 			}
 
-			if(_where_play(deck_table, deck_player, numberRight, numberLeft)){
+			else if(_where_play(deck_table, deck_player, numberRight, numberLeft)){ //para jogar uma peça
 				deck_player = push_table(deck_player, &deck_table, numberRight, numberLeft);
-				break;
-			}
-
-			if(deck_player == NULL){
-				end_game = 1;
 				break;
 			}
 
 			printf("Choose another piece! Or fish one.\n");
 		}
-		if(end_game) break;
+
+		if(deck_player == NULL) break;
 
 
-		deck_pc = ai_move(deck_pc, deck_player, &deck_table, &deck_back);
-		if(deck_pc == NULL) break;
+		while(1){ //loop para a IA jogar
+			deck_pc = ai_move(deck_pc, deck_player, &deck_table, &deck_back);
+
+			if(!can_play(deck_pc, deck_table, deck_back) && !can_play(deck_player, deck_table, deck_back) && deck_back != NULL){
+				//se ninguém mais consegue jogar
+				end_game = 1;
+				break;
+			}
+			if(can_play(deck_player, deck_table, deck_back) && deck_back != NULL){
+				//se o player pode fazer outra jogada
+				break;
+			}
+			//se o player não puder jogar o computador joga novamente
+		}
+		
+		if(end_game == 1) break;
 	}
 
 	if(deck_player == NULL) printf("Você ganhou!!!\n");
