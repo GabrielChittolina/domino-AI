@@ -6,18 +6,16 @@
 int main(void){
 	int i;
 	int numberLeft, numberRight;
-	int end_game = 0;
+	int you_won;
 
-	TppecaDomino * deck_player; //pecas do usuario
-	TppecaDomino * deck_pc; //pecas do computador
-	TppecaDomino * deck_table; //pecas que estao na mesa
-	TppecaDomino * deck_back; //pecas do monte
+	TppecaDomino * p;
 
-	deck_player = new_list();
-	deck_pc = new_list();
-	deck_table = new_list();
-	deck_back = new_deck();
+	TppecaDomino * deck_player = new_list();
+	TppecaDomino * deck_pc = new_list();
+	TppecaDomino * deck_table = new_list();
+	TppecaDomino * deck_back = new_deck();
 
+	
 	for(i = 0; i < 7; i++){
 		deck_player = catch_piece(deck_player, &deck_back);
 		deck_pc = catch_piece(deck_pc, &deck_back);
@@ -25,68 +23,70 @@ int main(void){
 
 	while(1){ //loop principal do jogo
 
-		printf("Table:\n");
-		print_deck(deck_table);
-		printf("Player's deck:\n");
-		print_deck(deck_player);
-		printf("PC deck:\n");
-		print_deck(deck_pc);
-
-		printf("Piece to play is: ");
-
-		while(1){ //loop para o player jogar
+		while(1){//loop para o player jogar
+			system("clear");
+			printf("Para jogar uma peça insira os seus dois números, para pescar insira -1 -1 e para pular a vez -2 -2.\n");
+			printf("\nMesa\n");
+			print_deck(deck_table);
+			printf("Seu deck\n");
+			print_deck(deck_player);
+			printf("O computador tem %d peças\n", deck_size(deck_pc));
+			printf("Sua jogada: ");
 			scanf("%d %d", &numberLeft, &numberRight);
 
-			if( (numberLeft < 0 || numberRight < 0) && deck_back == NULL){
-				break;
-			}
+			if(numberLeft == -1 || numberRight == -1){//pescar
+				if(deck_back == NULL) break;//se o player tenta pescar com o monte vazio
 
-			if(numberLeft < 0 || numberRight < 0){ //para pescar
 				deck_player = catch_piece(deck_player, &deck_back);
-				printf("Table:\n");
-				print_deck(deck_table);
-				printf("Player's deck:\n");
-				print_deck(deck_player);
-				printf("PC deck:\n");
-				print_deck(deck_pc);
-
 				continue;
 			}
 
-			else if(_where_play(deck_table, deck_player, numberRight, numberLeft)){ //para jogar uma peça
-				deck_player = push_table(deck_player, &deck_table, numberRight, numberLeft);
+			else if(numberLeft == -2 || numberRight == -2){//pular a vez
 				break;
 			}
 
-			printf("Choose another piece! Or fish one.\n");
+			
+			//jogar uma peça na mesa
+
+			if(!_where_play(deck_table, deck_player, numberRight, numberLeft)){//se o jogador escolheu uma peça invalida
+				printf("Escolha uma peça válida ou pule sua vez!\n");
+				continue;
+			}
+
+			deck_player = push_table(deck_player, &deck_table, numberRight, numberLeft);
+			break;
 		}
 
-		if(deck_player == NULL) break;
+		if(deck_player == NULL) break;//se o jogador já ganhou
 
 
-		while(1){ //loop para a IA jogar
-			deck_pc = ai_move(deck_pc, deck_player, &deck_table, &deck_back);
+		//vez do computador jogar
+		deck_pc = ai_move(deck_pc, deck_player, &deck_table, &deck_back);
 
-			if(deck_pc == NULL || (!can_play(deck_pc, deck_table, deck_back) && !can_play(deck_player, deck_table, deck_back) && deck_back != NULL)){
-				//se ninguém mais consegue jogar
-				end_game = 1;
-				break;
-			}
-			if(can_play(deck_player, deck_table, deck_back) && deck_back != NULL){
-				//se o player pode fazer outra jogada
-				break;
-			}
-			//se o player não puder jogar o computador joga novamente
+
+		if(deck_back != NULL) continue; //se será possível pescar no próximo turno
+
+		for(p = deck_player; p != NULL; p = p->right){//se o jogador poderá jogar no próximo turno
+			if(where_play(p, deck_table)) continue;
 		}
-		
-		if(end_game == 1) break;
+
+		for(p = deck_pc; p != NULL; p = p->right){//se o computador poderá jogar no próximo turno
+			if(where_play(p, deck_table)) continue;
+		}
+
+		break; //se ninguém tem como jogar no próximo turno
 	}
 
-	if(deck_player == NULL) printf("Você ganhou!!!\n");
-	else if(deck_pc == NULL) printf("Você perdeu!!!\n");
-	else if(deck_size(deck_player) == deck_size(deck_pc)) printf("Empate!\n");
-	else if(deck_size(deck_player) < deck_size(deck_pc)) printf("Você ganhou!\n");
-	else printf("Você perdeu!\n");
+	if(deck_player == NULL) you_won = 1;
+	else if (deck_pc == NULL) you_won = 0;
+	else if (deck_size(deck_player) < deck_size(deck_pc)) you_won = 1;
+	else if (deck_size(deck_player) > deck_size(deck_pc)) you_won = 0;
+	else you_won = -1;
+
+	if(you_won == 1) printf("Você ganhou!\n");
+	else if(you_won == 0) printf("Você perdeu.\n");
+	else printf("Empate!\n");
 
 	return 0;
 }
+
